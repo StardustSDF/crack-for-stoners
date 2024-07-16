@@ -1,3 +1,4 @@
+// src/ovenSimulator.ts
 import { promisify } from "util";
 
 export const sleep = promisify(setTimeout);
@@ -176,7 +177,7 @@ export const ovenSimulatorFactory = (id: number) => {
         let minDraw = j + min
         ovenState.curTemp = cT + getRandomFloat(minDraw, maxDraw)
     };
-
+    // just checks if the user is an idiot and didn't realize that they inputted something that contradicts themselves or the code
     const idiotproofer = () => {
         if (ovenState.tarTemp > ovenState.attributes.maxTemp) {
             return false
@@ -228,7 +229,7 @@ export const ovenSimulatorFactory = (id: number) => {
 
 
 
-
+    // tick rate is set to 100 and oughtn't to change
     const intervalHandler = setInterval(evaluationLoop, ovenState.attributes.tickRate);
 
 // everything down here assigns values to variables, as well as allowing you to access the value of those variables.

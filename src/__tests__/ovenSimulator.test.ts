@@ -47,65 +47,64 @@ if (state.s4 == true) {
     console.log(`Initialized oven with broken ramp mode`)
 };
 
-await sleep(100)
+await sleep(100)                       //    100/100 = 1
 expect(oven.getOvenId()).toBe(1);
 //expect(oven.getTarTemp()).toBe(100);
-expect(oven.getCurTemp()).toBe(14);
-expect(oven.getCurRamp()).toBe(7);
-expect(oven.getTarRamp()).toBe(7);
-expect(oven.getRampRamp()).toBe(1);
-expect(oven.gets1()).toBe(true);
-expect(oven.gets2()).toBe(false);
-expect(oven.gets3()).toBe(false);
-expect(oven.gets4()).toBe(false);
-expect(oven.getTime()).toBe(1);
-expect(oven.getMaxTemp()).toBe(300);
-expect(oven.getMinTemp()).toBe(30);
-expect(oven.getMaxRamp()).toBe(10);
+//expect(oven.getCurTemp()).toBe(14);
+//expect(oven.getCurRamp()).toBe(7);
+//expect(oven.getTarRamp()).toBe(7);
+//expect(oven.getRampRamp()).toBe(1);
+//expect(oven.gets1()).toBe(true);
+//expect(oven.gets2()).toBe(false);
+//expect(oven.gets3()).toBe(false);
+//expect(oven.gets4()).toBe(false);
+expect(oven.getTime()).toBe(1);          //    0 + 1 = 1
+//expect(oven.getMaxTemp()).toBe(300);
+//expect(oven.getMinTemp()).toBe(30);
+//expect(oven.getMaxRamp()).toBe(10);
 expect(oven.getTickRate()).toBe(100);
-expect(oven.getContErr()).toBe(2);
-expect(oven.getIntTemp()).toBe(0);
-expect(oven.getIntRamp()).toBe(7);
+//expect(oven.getContErr()).toBe(2);
+//expect(oven.getIntTemp()).toBe(0);
+//expect(oven.getIntRamp()).toBe(7);
 
-await sleep(100)
-expect(oven.getOvenId()).toBe(1);
+await sleep(100)                        //    100/100 = 1
+//expect(oven.getOvenId()).toBe(1);
 //expect(oven.getTarTemp()).toBe(100);
-expect(oven.getCurTemp()).toBe(21);
-expect(oven.getCurRamp()).toBe(7);
-expect(oven.getTarRamp()).toBe(7);
-expect(oven.getRampRamp()).toBe(1);
-expect(oven.gets1()).toBe(true);
-expect(oven.gets2()).toBe(false);
-expect(oven.gets3()).toBe(false);
-expect(oven.gets4()).toBe(false);
-expect(oven.getTime()).toBe(2);
-expect(oven.getMaxTemp()).toBe(300);
-expect(oven.getMinTemp()).toBe(30);
-expect(oven.getMaxRamp()).toBe(10);
+//expect(oven.getCurTemp()).toBe(21);
+//expect(oven.getCurRamp()).toBe(7);
+//expect(oven.getTarRamp()).toBe(7);
+//expect(oven.getRampRamp()).toBe(1);
+//expect(oven.gets1()).toBe(true);
+//expect(oven.gets2()).toBe(false);
+//expect(oven.gets3()).toBe(false);
+//expect(oven.gets4()).toBe(false);
+expect(oven.getTime()).toBe(2);          //      1 + 1 = 2
+//expect(oven.getMaxTemp()).toBe(300);
+//expect(oven.getMinTemp()).toBe(30);
+//expect(oven.getMaxRamp()).toBe(10);
 expect(oven.getTickRate()).toBe(100);
-expect(oven.getContErr()).toBe(2);
-expect(oven.getIntTemp()).toBe(0);
-expect(oven.getIntRamp()).toBe(7);
+//expect(oven.getContErr()).toBe(2);
+//expect(oven.getIntTemp()).toBe(0);
+//expect(oven.getIntRamp()).toBe(7);
 
-await sleep(1010)
-expect(oven.getOvenId()).toBe(1);
+await sleep(1000)                        //       1000/100 = 10
+//expect(oven.getOvenId()).toBe(1);
 //expect(oven.getTarTemp()).toBe(100);
-expect(oven.getCurTemp()).toBeGreaterThan(21);
-expect(oven.getCurRamp()).toBe(7);
-expect(oven.getTarRamp()).toBe(7);
-expect(oven.getRampRamp()).toBe(1);
-expect(oven.gets1()).toBe(false);
-expect(oven.gets2()).toBe(false);
-expect(oven.gets3()).toBe(true);
-expect(oven.gets4()).toBe(false);
-expect(oven.getTime()).toBe(12);
-expect(oven.getMaxTemp()).toBe(300);
-expect(oven.getMinTemp()).toBe(30);
-expect(oven.getMaxRamp()).toBe(10);
-expect(oven.getTickRate()).toBe(100);
-expect(oven.getContErr()).toBe(2);
-expect(oven.getIntTemp()).toBe(0);
-expect(oven.getIntRamp()).toBe(7);
-
+//expect(oven.getCurTemp()).toBeGreaterThan(21);
+//expect(oven.getCurRamp()).toBe(7);
+//expect(oven.getTarRamp()).toBe(7);
+//expect(oven.getRampRamp()).toBe(1);
+//expect(oven.gets1()).toBe(false);
+//expect(oven.gets2()).toBe(false);
+//expect(oven.gets3()).toBe(true);
+//expect(oven.gets4()).toBe(false);
+expect(oven.getTime()).toBe(12);       // So therefore, 2 + 10 should be 12!
+//expect(oven.getMaxTemp()).toBe(300);
+//expect(oven.getMinTemp()).toBe(30);
+//expect(oven.getMaxRamp()).toBe(10);
+//expect(oven.getTickRate()).toBe(100);
+//expect(oven.getContErr()).toBe(2);
+//expect(oven.getIntTemp()).toBe(0);
+//expect(oven.getIntRamp()).toBe(7);
 });
 

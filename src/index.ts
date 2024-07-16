@@ -1,4 +1,8 @@
 // src/index.ts
+
+
+// THIS DOESN'T DO ANYTHING YET
+// PLEASE NAVIGATE TO /src/__tests__/ovenSimulator.test.ts AND RUN "npm test" exluding quotation marks to test the oven
 import { ovenSimulatorFactory } from './ovenSimulator'
 
 const oven = ovenSimulatorFactory(1);
