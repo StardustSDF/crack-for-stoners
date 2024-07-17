@@ -3,7 +3,8 @@ import { promisify } from "util";
 
 export const sleep = promisify(setTimeout);
 
-interface ovenAttributes {
+// all oven attributes, for some reason it's pretty random what's an attribute and what isn't
+export interface ovenAttributes {
     maxTemperature: number;
     minTemperature: number;
     maxRamp: number;
@@ -13,8 +14,8 @@ interface ovenAttributes {
     initialTemperature: number;
     initialRamp: number;
 }
-
-interface simulatedOvenState {
+// these are the attributes that are too special to go in the other attribute section
+export interface simulatedOvenState {
     currentTemperature: number;
     targetTemperature: number;
     currentRamp: number;
@@ -26,15 +27,15 @@ interface simulatedOvenState {
     case4: boolean; // Broken Wobble Mode
     attributes: ovenAttributes;
 }
-
-const ovenSimulatorFactory = (id: number) => {
+// a factory, not a sweatshop
+export const ovenSimulatorFactory = (id: number) => {
     const ovenState: simulatedOvenState = {
         currentTemperature: 0,
         targetTemperature: 0,
         currentRamp: -1,
         targetRamp: -1,
         timeElapsed: -1,
-        case1: false,
+        case1: true,
         case2: false,
         case3: false,
         case4: false,
@@ -42,14 +43,14 @@ const ovenSimulatorFactory = (id: number) => {
             maxTemperature: 300,
             minTemperature: 30,
             maxRamp: 7,
-            rampRamp: 0,
+            rampRamp: 0.1,
             controlError: 3,
-            tickRate: 100,
+            tickRate: 1000,
             initialTemperature: 0,
             initialRamp: 0,
         },
     };
-
+    // runs every so milliseconds equal to tickRate
     const evaluationLoop = () => {
         ovenState.timeElapsed++
         let cR = ovenState.currentRamp;
@@ -59,12 +60,13 @@ const ovenSimulatorFactory = (id: number) => {
         }
         if (ovenState.case1 == true) {
             rampMode();
-        } else if (ovenState.case2 == true) {
+        }
+        if (ovenState.case2 == true) {
             wobbleMode();
         }
         ovenState.currentRamp = rampRampFormula(cR);
-    };
-
+    }; 
+    // case1, yo
     const rampMode = () => {
         let cT = ovenState.currentTemperature;
         let tT = ovenState.targetTemperature;
@@ -74,14 +76,15 @@ const ovenSimulatorFactory = (id: number) => {
         } else {
             if (tT - cR >= cT) {
                 ovenState.currentTemperature = cT + cR;
-            } else {
+            } 
+            else {
                 ovenState.currentTemperature = tT;
                 ovenState.case1 = false;
                 ovenState.case2 = true;
             }
         }
     };
-
+    // case3. it's broken because it uses the initial ramp rate for the formula each time instead of using the update ramp rate
     const brokenRampMode = () => {
         let cT = ovenState.currentTemperature;
         let tT = ovenState.targetTemperature;
@@ -89,43 +92,51 @@ const ovenSimulatorFactory = (id: number) => {
         let nR = rampRampFormula(cR);
         if (tT - nR >= cT) {
             ovenState.currentTemperature = cT + nR;
-        } else {
+        }
+        else {
             ovenState.currentTemperature = tT;
             ovenState.case3 = false;
             ovenState.case2 = true;
         }
     };
-
+    // old ramp + ramp ramp = new ramp
     const rampRampFormula = (current: number) => {
         let r = ovenState.attributes.rampRamp;
+        r = r + 0.1
+        if (r > 1) {
+            r = 1
+        }
         let newNumber = r + current;
         let j = ovenState.targetRamp;
         if (newNumber > j) {
             newNumber = j;
         }
+        ovenState.attributes.rampRamp = r
         return newNumber;
     };
-
+    // case2. Because the oven can't maintain exactly any temperature, it wobbles around the setpoint
     const wobbleMode = () => {
         let tT = ovenState.targetTemperature;
         let cT = ovenState.currentTemperature;
         let arror = ovenState.attributes.controlError;
         let max = tT + arror;
         let min = tT - arror;
-        if (ovenState.case4 == true) {
-            brokenWobbleMode();
-        } else {
-            let maxDraw = max - cT;
+        let maxDraw = max - cT;
             let j = 0 - cT;
             let minDraw = j + min;
-            ovenState.currentTemperature = cT + getRandomFloat(minDraw, maxDraw);
+            let nT = cT + getRandomFloat(minDraw, maxDraw);
+        if (ovenState.case4 == true) {
+            brokenWobbleMode();
+        } 
+        else {
+            ovenState.currentTemperature = nT;
         }
     };
-
+    // for case 2 and 4 only, gets a random number based on the uh the control error 
     const getRandomFloat = (min: number, max: number): number => {
         return Math.random() * (max - min) + min;
     };
-
+    // case4. It's broken because it can't maintain the setpoint temperature nearly as well as it's supposed to
     const brokenWobbleMode = () => {
         let cT = ovenState.currentTemperature;
         let tT = ovenState.targetTemperature;
@@ -137,7 +148,7 @@ const ovenSimulatorFactory = (id: number) => {
         let minDraw = j + min;
         ovenState.currentTemperature = cT + getRandomFloat(minDraw, maxDraw);
     };
-
+    // if a variable is WRONG, then this'll cause the code to stop
     const idiotproofer = () => {
         if (ovenState.targetTemperature > ovenState.attributes.maxTemperature) {
             return false;
@@ -171,10 +182,10 @@ const ovenSimulatorFactory = (id: number) => {
         return true;
     };
 
-
+    // interval handler for the evaluation loop
     const intervalHandler = setInterval(evaluationLoop, ovenState.attributes.tickRate);
     const clearIntervalHandler = () => clearInterval(intervalHandler);
-
+    // returns variables and also lets you set variables
     return {
         getOvenId: () => id,
         getState: (): simulatedOvenState => ovenState,
@@ -222,50 +233,3 @@ const ovenSimulatorFactory = (id: number) => {
 };
 
 // Initialization and DOM handling
-document.addEventListener("DOMContentLoaded", () => {
-    const simulator = ovenSimulatorFactory(1);
-    simulator.setTarTemp(250);
-    simulator.setRamp(0.7, 7, 0.1);
-    simulator.setModes(true, false, false);
-    const updateDOM = () => {
-        let curTemp = simulator.getCurTemp();
-        let tarTemp = simulator.getTarTemp();
-        let curRamp = simulator.getCurRamp();
-        let tarRamp = simulator.getTarRamp();
-        let cycles = simulator.getTime();
-        let s1 = simulator.getcase1();
-        let s2 = simulator.getcase2();
-        let s3 = simulator.getcase3();
-        let s4 = simulator.getcase4();
-        let curRampRamp = simulator.getRampRamp();
-        let initRamp = simulator.getIntRamp();
-        let curMode = "Normal Ramp Up Mode"
-        console.log({
-            curTemp, tarTemp, curRamp, tarRamp, cycles, curRampRamp, initRamp, curMode
-        });
-        if (s1 == true) {
-            curMode = "Normal Ramp Up Mode"
-        };
-        if (s2 == true) {
-            curMode = "Normal Wobble Mode"
-        };
-        if (s3 == true) {
-            curMode = "Broken Ramp Up Mode"
-        };
-        if (s4 == true) {
-            curMode = "Broken Wobble Mode"
-        };
-        document.getElementById("curTempId")!.innerText = curTemp.toString();
-        document.getElementById("tarTempId")!.innerText = tarTemp.toString();
-        document.getElementById("curRampId")!.innerText = curRamp.toString();
-        document.getElementById("tarRampId")!.innerText = tarRamp.toString();
-        document.getElementById("cyclesId")!.innerText = cycles.toString();
-        document.getElementById("curRampRamp")!.innerText = curRampRamp.toString();
-        document.getElementById("initialRampRateId")!.innerText = initRamp.toString();
-        document.getElementById("curModeId")!.innerText = curMode.toString();
-    // Updating the DOM every tick
-    setInterval(() => {
-        updateDOM();
-    }, simulator.getTickRate());
-    };
-});
