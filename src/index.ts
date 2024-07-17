@@ -7,6 +7,8 @@ import { ovenSimulatorFactory } from './ovenSimulator'
 
 const oven = ovenSimulatorFactory(1);
 
+
+
 const newAttributes = {
     maxTemp: 300,
     minTemp: 30,
@@ -42,4 +44,16 @@ if (state.s4 == true) {
     console.log(`Initialized oven with broken ramp mode`)
 }
 
+const updateDisplay = () => {
+    const curTempElement = document.getElementById('curTemp')
+    const tarTempElement = document.getElementById('tarTemp')
+
+    if (curTempElement) {
+        curTempElement.textContent = oven.getCurTemp().toString();
+    }
+    if (tarTempElement) {
+        tarTempElement.textContent = oven.getTarTemp().toString();
+    }
+};
+setInterval(updateDisplay, state.attributes.tickRate)
 
