@@ -12,21 +12,24 @@ document.addEventListener("DOMContentLoaded", () => {
         maxTemperature: 300,
         minTemperature: 30,
         maxRamp: 7,
-        rampRamp: 0,
+        rampRamp: 0.1,
         controlError: 3,
-        tickRate: 1000,
+        tickRate: 100,
         initialTemperature: 0,
         initialRamp: 1,
     };
     simulator.setOvenAttributes(Attributes)
     simulator.setTarTemp(150);
-    simulator.setRamp(1, 7, 0.1);
-    simulator.setModes(true, false, false);
+    simulator.setRamp(0.1, 7, 0.1);
+    //simulator.setModes(normal ramp, broken ramp, broken wobble)
+    simulator.setModes(true, false, true);
     let tickRate = simulator.getTickRate();
     const updateDOM = () => {
-        let curMode = "Hello"
+        let curMode = "Hello there :^)"
         let c1 = simulator.getcase1();
         let c2 = simulator.getcase2();
+        let c3 = simulator.getcase3();
+        let c4 = simulator.getcase4();
         //let c3 = simulator.getcase3();
         //let c4 = simulator.getcase4();
         if (c1 == true) {
@@ -34,6 +37,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (c2 == true) {
             curMode = "Normal Wobble"
+        }
+        if (c3 == true) {
+            curMode = "Broken Ramp"
+        }
+        if (c4 == true) {
+            curMode = "Broken Wobble"
         }
         document.getElementById("curTempId")!.innerText = simulator.getCurTemp().toString();
         document.getElementById("tarTempId")!.innerText = simulator.getTarTemp().toString();
@@ -43,6 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
         //document.getElementById("curRampRamp")!.innerText = curRampRamp.toString();
         //document.getElementById("initialRampRateId")!.innerText = simulator.getIntRamp().toString();
         document.getElementById("curModeId")!.innerText = curMode.toString();
+        document.getElementById("case1Id")!.innerText = c1.toString();
+        document.getElementById("case2Id")!.innerText = c2.toString();
+        document.getElementById("case3Id")!.innerText = c3.toString();
+        document.getElementById("case4Id")!.innerText = c4.toString();
         //<p>Current Mode: <span id="curModeId"></span></p>
         //<p>Current Ramp Ramp Rate: <span id="curRampRampId">Initializing</span></p>
         //<p>Current Attributes: maxTemp: 300, minTemp: 30, maxRamp: 7, rampRamp: 0.1, controlError: 0, tickRate: 100</p>

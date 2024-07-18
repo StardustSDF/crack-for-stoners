@@ -25,6 +25,7 @@ export interface simulatedOvenState {
     case2: boolean; // Normal Wobble Mode
     case3: boolean; // Broken Ramping Mode
     case4: boolean; // Broken Wobble Mode
+    case4willbetrue: boolean;
     attributes: ovenAttributes;
 }
 // a factory, not a sweatshop
@@ -39,6 +40,7 @@ export const ovenSimulatorFactory = (id: number) => {
         case2: false,
         case3: false,
         case4: false,
+        case4willbetrue: false,
         attributes: {
             maxTemperature: 300,
             minTemperature: 30,
@@ -52,44 +54,51 @@ export const ovenSimulatorFactory = (id: number) => {
     };
     // runs every so milliseconds equal to tickRate
     const evaluationLoop = () => {
-        ovenState.timeElapsed++
-        let cR = ovenState.currentRamp;
         const properVariableChecker = idiotproofer();
         if (properVariableChecker == false) {
             throw new Error("Improper values assigned, execution halted");
         }
+        ovenState.timeElapsed++
         if (ovenState.case1 == true) {
             rampMode();
         }
         if (ovenState.case2 == true) {
-            wobbleMode();
+            if (ovenState.case4willbetrue == false) {
+                wobbleMode();}
+            else {
+                ovenState.case2 = false
+                ovenState.case4 = true
+                brokenWobbleMode
+            }
         }
-        ovenState.currentRamp = rampRampFormula(cR);
-    }; 
+        if (ovenState.case3 == true) {
+            brokenRampMode();
+        }
+        if (ovenState.case4 == true) {
+            brokenWobbleMode();
+        }
+    };
     // case1, yo
     const rampMode = () => {
         let cT = ovenState.currentTemperature;
         let tT = ovenState.targetTemperature;
         let cR = ovenState.currentRamp;
-        if (ovenState.case3 == true) {
-            brokenRampMode();
-        } else {
-            if (tT - cR >= cT) {
-                ovenState.currentTemperature = cT + cR;
-            } 
-            else {
-                ovenState.currentTemperature = tT;
-                ovenState.case1 = false;
-                ovenState.case2 = true;
-            }
-        }
+        if (tT - cR >= cT) {
+            ovenState.currentTemperature = cT + cR;
+        } 
+        else {
+            ovenState.currentTemperature = tT;
+            ovenState.case1 = false;
+            ovenState.case2 = true;
+        }  
+        ovenState.currentRamp = rampRampFormula(cR);
     };
     // case3. it's broken because it uses the initial ramp rate for the formula each time instead of using the update ramp rate
     const brokenRampMode = () => {
         let cT = ovenState.currentTemperature;
         let tT = ovenState.targetTemperature;
         let cR = ovenState.attributes.initialRamp;
-        let nR = rampRampFormula(cR);
+        let nR = cR
         if (tT - nR >= cT) {
             ovenState.currentTemperature = cT + nR;
         }
@@ -102,7 +111,7 @@ export const ovenSimulatorFactory = (id: number) => {
     // old ramp + ramp ramp = new ramp
     const rampRampFormula = (current: number) => {
         let r = ovenState.attributes.rampRamp;
-        r = r + 0.1
+        r = r + 0.01
         if (r > 1) {
             r = 1
         }
@@ -138,15 +147,16 @@ export const ovenSimulatorFactory = (id: number) => {
     };
     // case4. It's broken because it can't maintain the setpoint temperature nearly as well as it's supposed to
     const brokenWobbleMode = () => {
-        let cT = ovenState.currentTemperature;
         let tT = ovenState.targetTemperature;
-        let cE = ovenState.attributes.controlError + 5;
-        let max = tT + cE;
-        let min = tT - cE;
+        let cT = ovenState.currentTemperature;
+        let arror = ovenState.attributes.controlError + 50
+        let max = tT + arror;
+        let min = tT - arror;
         let maxDraw = max - cT;
         let j = 0 - cT;
         let minDraw = j + min;
-        ovenState.currentTemperature = cT + getRandomFloat(minDraw, maxDraw);
+        let nT = cT + getRandomFloat(minDraw, maxDraw);
+        ovenState.currentTemperature = nT;
     };
     // if a variable is WRONG, then this'll cause the code to stop
     const idiotproofer = () => {
@@ -165,7 +175,7 @@ export const ovenSimulatorFactory = (id: number) => {
         if (ovenState.attributes.rampRamp < 0) {
             return false;
         }
-        if (ovenState.attributes.rampRamp > ovenState.attributes.initialRamp) {
+        if (ovenState.attributes.rampRamp < ovenState.attributes.initialRamp) {
             return false;
         }
         if (ovenState.attributes.tickRate < 0) {
@@ -208,7 +218,7 @@ export const ovenSimulatorFactory = (id: number) => {
         getcase4: () => ovenState.case4,
         setOvenAttributes: (attributes: ovenAttributes) => {
             ovenState.attributes = attributes;
-            ovenState.timeElapsed = -1;
+            ovenState.timeElapsed = 0;
         },
         setTarTemp: (setpoint: number) => {
             ovenState.targetTemperature = setpoint;
@@ -222,8 +232,9 @@ export const ovenSimulatorFactory = (id: number) => {
         setModes: (standardRamp: boolean, brokenRamp: boolean, brokenWobble: boolean) => {
             ovenState.case1 = standardRamp;
             ovenState.case3 = brokenRamp;
-            ovenState.case4 = brokenWobble;
-            evaluationLoop();
+            ovenState.case4willbetrue = brokenWobble;
+            ovenState.case4 = false;
+            ovenState.case2 = false;
         },
         clearInterval: () => {
             clearIntervalHandler();
@@ -233,3 +244,7 @@ export const ovenSimulatorFactory = (id: number) => {
 };
 
 // Initialization and DOM handling
+// For web interface
+// Is not available here!
+// A secret is required to unlock...
+// Use "normal" testing instead
